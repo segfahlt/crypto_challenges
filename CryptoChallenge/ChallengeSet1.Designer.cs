@@ -1,6 +1,6 @@
 ﻿namespace CryptoChallenge
 {
-	partial class Form1
+	partial class ChallengeSet1
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChallengeSet1));
 			this.txtHexString = new System.Windows.Forms.TextBox();
 			this.txtBase64String = new System.Windows.Forms.TextBox();
 			this.btnConvert1 = new System.Windows.Forms.Button();

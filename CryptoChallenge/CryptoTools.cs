@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CryptoChallenge
 {
@@ -218,5 +220,57 @@ namespace CryptoChallenge
 			byte[] resultArray = cTransform.TransformFinalBlock(source, 0, source.Length);
 			return resultArray;
 		}
+		public static byte[] EncryptAesEcb(byte[] key, byte[] source)
+		{
+			var iv = new byte[key.Length];
+			var rDel = new RijndaelManaged { KeySize = (key.Length * 8), Key = key, Mode = CipherMode.ECB, Padding = PaddingMode.None };
+			var cTransform = rDel.CreateEncryptor(key, iv);
+			byte[] resultArray = cTransform.TransformFinalBlock(source, 0, source.Length);
+			return resultArray;
+		}
+
+		public static byte[] PadToMultiple(byte[] source, int multipleOf)
+		{
+			var leftOver = source.Length % multipleOf;
+			if (leftOver > 0) leftOver = multipleOf - leftOver;
+
+			var result = new byte[source.Length + leftOver];
+			for (var i = 0; i < source.Length; i++)
+				result[i] = source[i];
+			for (var i = source.Length; i < result.Length; i++)
+				result[i] = (byte) leftOver;
+			return result;
+		}
+
+		public static byte[] GetChunk(byte[] source, int chunkSize, int chunkNumber)
+		{
+			return source.Skip(chunkSize * chunkNumber).Take(chunkSize).ToArray();
+		}
+
+		public static List<byte[]> Chunkify(byte[] source, int chunkSize)
+		{
+			var result = new List<byte[]>();
+			for (var i = 0; i < source.Length / chunkSize; i++)
+				result.Add(GetChunk(source,chunkSize,i));
+			return result;
+		}
+		public static string CbcDecrypt(byte[] key, byte[] iv, byte[] source)
+		{
+			var chunks = Chunkify(source, key.Length);
+			var additionArray = iv;
+			var res = new List<string>();
+			foreach (var chunk in chunks)
+			{
+				var decrypted = DecryptAesEcb(key, chunk);
+				var step1Array = Xor(additionArray, decrypted);
+				res.Add(Encoding.UTF8.GetString(step1Array));
+				additionArray = chunk;
+			}
+
+			var returnString = string.Join("", res);
+			return returnString;
+		}
+
+
 	}
 }

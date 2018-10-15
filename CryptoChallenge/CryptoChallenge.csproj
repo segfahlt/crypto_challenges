@@ -45,17 +45,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CryptoTools.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="ChallengeSet2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="ChallengeSet2.Designer.cs">
+      <DependentUpon>ChallengeSet2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CryptoTools.cs" />
+    <Compile Include="ChallengeSet1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChallengeSet1.Designer.cs">
+      <DependentUpon>ChallengeSet1.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="WFrame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WFrame.Designer.cs">
+      <DependentUpon>WFrame.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="ChallengeSet1.resx">
+      <DependentUpon>ChallengeSet1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChallengeSet2.resx">
+      <DependentUpon>ChallengeSet2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -66,6 +81,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="WFrame.resx">
+      <DependentUpon>WFrame.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -80,6 +98,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Files\10.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\6.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

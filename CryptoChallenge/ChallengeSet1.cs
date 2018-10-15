@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace CryptoChallenge
 {
-	public partial class Form1 : Form
+	public partial class ChallengeSet1 : Form
 	{
-		public Form1()
+		public ChallengeSet1()
 		{
 			InitializeComponent();
 		}
