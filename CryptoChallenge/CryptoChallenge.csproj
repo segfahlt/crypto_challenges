@@ -58,6 +58,7 @@
     <Compile Include="ChallengeSet1.Designer.cs">
       <DependentUpon>ChallengeSet1.cs</DependentUpon>
     </Compile>
+    <Compile Include="CryptoToolsExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WFrame.cs">

@@ -19,16 +19,16 @@ namespace CryptoChallenge
 
 		private void ConvertHextStringToBase64(object sender, EventArgs e)
 		{
-			var ba = CryptoTools.HexStringToByteArray(txtHexString.Text);
-			txtBase64String.Text = CryptoTools.ToBase64(ba);
+			var ba = txtHexString.Text.AsHexToByteArray();
+			txtBase64String.Text = ba.ToBase64();
 		}
 
 		private void DoXor(object sender, EventArgs e)
 		{
-			var b1 = CryptoTools.HexStringToByteArray(txtXor1.Text);
-			var b2 = CryptoTools.HexStringToByteArray(txtXor2.Text);
-			var bres = CryptoTools.Xor(b1, b2);
-			txtXorResult.Text = CryptoTools.ByteArrayToHexString(bres);
+			var b1 = txtXor1.Text.AsHexToByteArray();
+			var b2 = txtXor2.Text.AsHexToByteArray();
+			var bres = b1.Xor(b2);
+			txtXorResult.Text = bres.ToHexString();
 		}
 
 		private void ScoreXor(object sender, EventArgs e)
@@ -60,7 +60,7 @@ namespace CryptoChallenge
 			}
 			txtDetectXor.Lines = xord.ToArray();
 
-			var y = CryptoTools.Xor(encryptionChar, CryptoTools.HexStringToByteArray(textToDecrypt));
+			var y = encryptionChar.Xor(textToDecrypt.AsHexToByteArray());
 			lblDetectXor.Text = Encoding.UTF8.GetString(y);
 
 		}
@@ -71,8 +71,8 @@ namespace CryptoChallenge
 			var l = string.Join("\n", txtRepeatingCharXor.Lines);
 			var key = Encoding.UTF8.GetBytes("ICE");
 			var ba = Encoding.UTF8.GetBytes(l);
-			var r = CryptoTools.RepeatingCharXor(key, ba);
-			var r2 = CryptoTools.ByteArrayToHexString(r);
+			var r = key.XorRepeat(ba);
+			var r2 = r.ToHexString();
 			result.Add(r2);
 			txtRepeatingCharXor.Lines = result.ToArray();
 		}

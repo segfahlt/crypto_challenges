@@ -14,65 +14,9 @@ namespace CryptoChallenge
 	public class CryptoTools
 	{
 
-		public static byte[] HexStringToByteArray(string hexString)
-		{
-			if (hexString.Length % 2 != 0) return null;
-
-			var b = new byte[hexString.Length / 2];
-			for (var i = 0; i < hexString.Length / 2; i++)
-				b[i] = Convert.ToByte(Convert.ToByte(hexString.Substring(i * 2, 2), 16));
-			return b;
-		}
-		public static string ByteArrayToHexString(byte[] b)
-		{
-			return BitConverter.ToString(b).Replace("-", "");
-		}
-
-		public static string ToBase64(byte[] b)
-		{
-			return Convert.ToBase64String(b);
-		}
-
-		public static string HexStringToBase64(string hexString)
-		{
-			return ToBase64(HexStringToByteArray(hexString));
-		}
-
-		public static byte[] Xor(byte[] b1, byte[] b2)
-		{
-			if (b1.Length != b2.Length) return null;
-			var r = new byte[b1.Length];
-			for (var i = 0; i < b1.Length; i++)
-				r[i] = (byte)(b1[i] ^ b2[i]);
-			return r;
-		}
-
-		public static byte[] RepeatingCharXor(byte[] key, byte[] target)
-		{
-			var r = new byte[target.Length];
-			var tidx = 0;
-			while (tidx < target.Length)
-			{
-				foreach (var kchar in key)
-				{
-					r[tidx] = (byte)(kchar ^ target[tidx]);
-					if (++tidx >= target.Length) break;
-				}
-			}
-			return r;
-		}
-
-		public static byte[] Xor(byte b1, byte[] b2)
-		{
-			var r = new byte[b2.Length];
-			for (var i = 0; i < b2.Length; i++)
-				r[i] = (byte)(b1 ^ b2[i]);
-			return r;
-		}
-
 		public static string FindAndDecode(string hexEncodedString, out int highestScore, out byte encryptionChar)
 		{
-			var xorByteArray = CryptoTools.HexStringToByteArray(hexEncodedString);
+			var xorByteArray = hexEncodedString.AsHexToByteArray();
 			return FindAndDecode(xorByteArray, out highestScore, out encryptionChar);
 		}
 		public static string FindAndDecode(byte[] source, out int highestScore, out byte encryptionChar)
@@ -82,7 +26,7 @@ namespace CryptoChallenge
 			encryptionChar = (byte)0;
 			for (var i = 0; i <= 255; i++)
 			{
-				var resArray = Xor((byte)i, source);
+				var resArray = i.Xor(source);
 				var score = CryptoTools.CountPrintables(resArray);
 				if (score > highestScore)
 				{
@@ -150,7 +94,13 @@ namespace CryptoChallenge
 
 		public static string BreakRepeatingKeyXor(byte[] encryptedByteArray)
 		{
+			var chosenKey = FindKeyForRepeatingKeyXor(encryptedByteArray);
+			var decrypted = chosenKey.XorRepeat(encryptedByteArray);
+			return Encoding.UTF8.GetString(decrypted);
+		}
 
+		public static byte[] FindKeyForRepeatingKeyXor(byte[] encryptedByteArray)
+		{
 			var keySizeHamming = new List<Tuple<int, decimal>>();
 			for (var keySize = 2; keySize <= 40; keySize++)
 			{
@@ -158,12 +108,12 @@ namespace CryptoChallenge
 				var secondChunk = encryptedByteArray.Skip(keySize).Take(keySize).ToArray();
 				decimal hammingDistance = HammingDistance(firstChunk, secondChunk);
 				decimal normalizedHamming = hammingDistance / keySize;
-				keySizeHamming.Add(new Tuple<int, decimal>(keySize,normalizedHamming));
+				keySizeHamming.Add(new Tuple<int, decimal>(keySize, normalizedHamming));
 			}
 
 			var keySizes = keySizeHamming.OrderBy(f => f.Item2).ToList();
 
-			var keyData = new Dictionary<int,byte[]>();
+			var keyData = new Dictionary<int, byte[]>();
 			var maxPrintableCount = 0;
 			byte[] chosenKey = null;
 
@@ -182,9 +132,8 @@ namespace CryptoChallenge
 				}
 				keyData.Add(keySize.Item1, key);
 
-				//okay, no we need to xor our key with the source and see if it makes any sense.
-				var keyStr = Encoding.UTF8.GetString(key);
-				var decryptedArr = RepeatingCharXor(key, encryptedByteArray);
+				//okay, now we need to xor our key with the source and see if it makes any sense.
+				var decryptedArr = key.XorRepeat(encryptedByteArray);
 				var printableCount = CountPrintables(decryptedArr);
 				if (printableCount > maxPrintableCount)
 				{
@@ -193,8 +142,7 @@ namespace CryptoChallenge
 				}
 			}
 
-			var decrypted = RepeatingCharXor(chosenKey, encryptedByteArray);
-			return Encoding.UTF8.GetString(decrypted);
+			return chosenKey;
 		}
 
 		public static List<byte[]> TransposeBytes(byte[] source, int keySize)
@@ -262,7 +210,7 @@ namespace CryptoChallenge
 			foreach (var chunk in chunks)
 			{
 				var decrypted = DecryptAesEcb(key, chunk);
-				var step1Array = Xor(additionArray, decrypted);
+				var step1Array = additionArray.Xor(decrypted);
 				res.Add(Encoding.UTF8.GetString(step1Array));
 				additionArray = chunk;
 			}
